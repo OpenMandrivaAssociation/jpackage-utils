@@ -33,7 +33,7 @@
 
 Name:           jpackage-utils
 Version:        1.7.3
-Release:        %mkrel 3
+Release:        %mkrel 4
 Epoch:          0
 Summary:        JPackage utilities
 License:        BSD-style
@@ -156,7 +156,7 @@ JNI_LIBDIR=${_jnidir}
 JVM_ROOT=${_jvmdir}
 
 # You can define a system-wide JVM root here if you're not using the default one
-JAVA_HOME=\$JVM_ROOT/java-gcj
+JAVA_HOME=\$JVM_ROOT/java
 
 # Options to pass to the java interpreter
 #OPTIONS="-Dgnu.java.awt.peer.gtk.Graphics=Graphics2D"
