@@ -33,7 +33,7 @@
 
 Name:           jpackage-utils
 Version:        1.7.3
-Release:        %mkrel 5
+Release:        %mkrel 6
 Epoch:          0
 Summary:        JPackage utilities
 License:        BSD-style
@@ -50,7 +50,6 @@ AutoReqProv:    no
 BuildRequires:  %{__awk}, %{__grep}
 Requires:       /bin/egrep, %{__sed}, %{__perl}
 Requires(post): rpm-helper
-Requires(post): libgcj7-base
 
 %description
 Utilities for the JPackage Project <http://www.jpackage.org/>:
@@ -177,6 +176,7 @@ install -pm 644 xml/* ${RPM_BUILD_ROOT}${_javadir}-utils/xml
 ## BEGIN GCJ/CLASSPATH SPECIFIC ##
 %{__mkdir_p} %{buildroot}%{_prefix}/lib/security
 %{__cp} -a %{SOURCE1} %{buildroot}%{_prefix}/lib/security/classpath.security.real
+touch %{buildroot}%{_prefix}/lib/security/classpath.security
 
 %{__mkdir_p} %{buildroot}%{_bindir}
 %{__cat} > %{buildroot}%{_bindir}/rebuild-security-providers << EOF
@@ -217,6 +217,7 @@ touch 5000-gnu.javax.security.auth.callback.GnuCallbacks
 popd
 
 %{__mkdir_p} %{buildroot}%{_prefix}/lib
+touch %{buildroot}%{_prefix}/lib/logging.properties
 %{__cat} > %{buildroot}%{_prefix}/lib/logging.properties.real << EOF
 # Default logging properties.
 # See javadoc in java.util.logging.LogManager to information on
@@ -269,10 +270,12 @@ ${_javadir}-utils/*
 %config(noreplace) %{_sysconfdir}/java/font.properties
 %config(noreplace) %{_sysconfdir}/rpm/macros.d/jpackage.*macros
 %dir %{_prefix}/lib/security
+%ghost %{_prefix}/lib/security/classpath.security
 %{_prefix}/lib/security/classpath.security.real
 %dir %{_sysconfdir}/java/security
 %dir %{_sysconfdir}/java/security/security.d
 %config(noreplace) %{_sysconfdir}/java/security/security.d/*
+%ghost %{_prefix}/lib/logging.properties
 %{_prefix}/lib/logging.properties.real
 %dir %{_javadir}/gcj-endorsed
 EOF
@@ -297,6 +300,10 @@ fi
 if [ -x %{_bindir}/rebuild-security-providers ]; then
   %{_bindir}/rebuild-security-providers
 fi
+
+%triggerin -- libgcj7-base
+%{__cp} -af %{_prefix}/lib/security/classpath.security.real %{_prefix}/lib/security/classpath.security
+%{__cp} -af %{_prefix}/lib/logging.properties.real %{_prefix}/lib/logging.properties
 
 %files -f %{name}-%{version}.files
 %defattr(-,root,root,-)
