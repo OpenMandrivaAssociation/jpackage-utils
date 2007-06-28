@@ -33,7 +33,7 @@
 
 Name:           jpackage-utils
 Version:        1.7.3
-Release:        %mkrel 6
+Release:        %mkrel 7
 Epoch:          0
 Summary:        JPackage utilities
 License:        BSD-style
@@ -128,8 +128,8 @@ install -dm 755 ${RPM_BUILD_ROOT}${_jvmcommondatadir}
 install -dm 755 ${RPM_BUILD_ROOT}${_jvmcommonsysconfdir}
 install -dm 755 ${RPM_BUILD_ROOT}${_javadir}
 install -dm 755 ${RPM_BUILD_ROOT}${_jnidir}
-install -dm 755 ${RPM_BUILD_ROOT}${_javadir}-{utils,ext,1.4.0,1.4.1,1.4.2,1.5.0,1.6.0}
-install -dm 755 ${RPM_BUILD_ROOT}${_jnidir}-{ext,1.4.0,1.4.1,1.4.2,1.5.0,1.6.0}
+install -dm 755 ${RPM_BUILD_ROOT}${_javadir}-{utils,ext,1.4.0,1.4.1,1.4.2,1.5.0,1.6.0,1.7.0}
+install -dm 755 ${RPM_BUILD_ROOT}${_jnidir}-{ext,1.4.0,1.4.1,1.4.2,1.5.0,1.6.0,1.7.0}
 install -dm 755 ${RPM_BUILD_ROOT}${_javadocdir}
 install -dm 755 ${RPM_BUILD_ROOT}${_mavendepmapdir}
 
