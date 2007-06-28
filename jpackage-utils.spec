@@ -33,7 +33,7 @@
 
 Name:           jpackage-utils
 Version:        1.7.3
-Release:        %mkrel 8
+Release:        %mkrel 9
 Epoch:          0
 Summary:        JPackage utilities
 License:        BSD-style
@@ -300,6 +300,12 @@ fi
 %triggerin -- libgcj7-base
 %{__cp} -af %{_prefix}/lib/security/classpath.security.real %{_prefix}/lib/security/classpath.security
 %{__cp} -af %{_prefix}/lib/logging.properties.real %{_prefix}/lib/logging.properties
+
+%triggerpostun -- libgcj7-base
+%{__cp} -af %{_prefix}/lib/security/classpath.security.real %{_prefix}/lib/security/classpath.security
+%{__cp} -af %{_prefix}/lib/logging.properties.real %{_prefix}/lib/logging.properties
+# caused by triggerin:
+%{__rm} -f %{_prefix}/lib/security/classpath.security.rpmsave
 
 %files -f %{name}-%{version}.files
 %defattr(-,root,root,-)
