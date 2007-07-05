@@ -33,7 +33,7 @@
 
 Name:           jpackage-utils
 Version:        1.7.3
-Release:        %mkrel 9
+Release:        %mkrel 10
 Epoch:          0
 Summary:        JPackage utilities
 License:        BSD-style
