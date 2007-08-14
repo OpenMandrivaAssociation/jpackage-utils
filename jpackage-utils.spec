@@ -266,12 +266,12 @@ ${_javadir}-utils/*
 %config(noreplace) %{_sysconfdir}/java/jpackage-release
 %config(noreplace) %{_sysconfdir}/java/java.conf
 %config(noreplace) %{_sysconfdir}/java/font.properties
-%config(noreplace) %{_sysconfdir}/rpm/macros.d/jpackage.*macros
+%{_sysconfdir}/rpm/macros.d/jpackage.*macros
 %dir %{_prefix}/lib/security
 %{_prefix}/lib/security/classpath.security.real
 %dir %{_sysconfdir}/java/security
 %dir %{_sysconfdir}/java/security/security.d
-%config(noreplace) %{_sysconfdir}/java/security/security.d/*
+%{_sysconfdir}/java/security/security.d/*
 %{_prefix}/lib/logging.properties.real
 %dir %{_javadir}/gcj-endorsed
 EOF
