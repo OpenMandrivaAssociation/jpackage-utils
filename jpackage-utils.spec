@@ -33,7 +33,7 @@
 
 Name:           jpackage-utils
 Version:        1.7.3
-Release:        %mkrel 10
+Release:        %mkrel 11
 Epoch:          0
 Summary:        JPackage utilities
 License:        BSD-style
@@ -50,6 +50,8 @@ AutoReqProv:    no
 BuildRequires:  %{__awk}, %{__grep}
 Requires:       /bin/egrep, %{__sed}, %{__perl}
 Requires(post): rpm-helper
+# Contains invalid alternatives setup that breaks keytool symlink
+Conflicts:      kaffe-devel < 1.1.8-0.20070217.2
 
 %description
 Utilities for the JPackage Project <http://www.jpackage.org/>:
