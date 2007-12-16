@@ -31,9 +31,14 @@
 %define distver 1.7
 %define section free
 
+%define sdk_provider	icedtea
+%ifnarch %{ix86} x86_64
+%define sdk_provider	gcj
+%endif
+
 Name:           jpackage-utils
 Version:        1.7.3
-Release:        %mkrel 11
+Release:        %mkrel 12
 Epoch:          0
 Summary:        JPackage utilities
 License:        BSD-style
@@ -45,7 +50,9 @@ Source11:	jpackage.override.mandriva.macros
 Patch0:		jpackage-utils-1.7.3-gcj-macros.patch
 Group:          Development/Java
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
-BuildArch:      noarch
+# (anssi 12/2007): No longer noarch as different JDK is used on x86(_64) than
+# on other archs.
+#BuildArch:      noarch
 AutoReqProv:    no
 BuildRequires:  %{__awk}, %{__grep}
 Requires:       /bin/egrep, %{__sed}, %{__perl}
@@ -85,12 +92,24 @@ Utilities for the JPackage Project <http://www.jpackage.org/>:
                                 system-wide Java configuration file
 * %{_sysconfdir}/rpm/macros.d/jpackage.macros
                                 RPM macros for Java packagers and developers
-* %{_docdir}/%{name}-%{version}/jpackage-policy
+* %{_docdir}/%{name}/jpackage-policy
                                 Java packaging policy for packagers and
                                 developers
 
 It also contains the license, man pages, documentation, XSL files of general
 use with maven2, a header file for spec files etc.
+
+%package -n java-rpmbuild
+Summary:	Java SDK for building Mandriva java rpm packages
+Group:		Development/Java
+Requires:	java-devel-%{sdk_provider}
+# (anssi 11/2007) TODO test on cooker, urpmi bug, offers choice with sun sdk:
+Requires:	java-%{sdk_provider}
+Requires:	jpackage-utils = %{version}
+
+%description -n java-rpmbuild
+Contains links that set up the default java SDK which is used for
+building Mandriva rpm packages of java software.
 
 %prep
 %setup -q
@@ -100,7 +119,7 @@ use with maven2, a header file for spec files etc.
 %{__perl} -pi -e 's|jre/sh|jre/bin|g' java-utils/java-functions 
 
 %build
-echo "JPackage release %{distver} (%{distribution}) for %{buildarch}" \
+echo "JPackage release %{distver} (%{distribution}) for %{_target_cpu}" \
  > etc/jpackage-release
 
 
@@ -174,6 +193,9 @@ install -m644 %{SOURCE11} -D %{buildroot}%{_sysconfdir}/rpm/macros.d/jpackage.ov
 install -pm 644 man/* ${RPM_BUILD_ROOT}%{_mandir}/man1
 %{__mkdir_p} ${RPM_BUILD_ROOT}${_javadir}-utils/xml
 install -pm 644 xml/* ${RPM_BUILD_ROOT}${_javadir}-utils/xml
+
+ln -s java-%{sdk_provider} %{buildroot}${_jvmdir}/java-rpmbuild
+ln -s java-%{sdk_provider} %{buildroot}${_jvmjardir}/java-rpmbuild
 
 ## BEGIN GCJ/CLASSPATH SPECIFIC ##
 %{__mkdir_p} %{buildroot}%{_prefix}/lib/security
@@ -278,6 +300,11 @@ ${_javadir}-utils/*
 %dir %{_javadir}/gcj-endorsed
 EOF
 
+cat <<EOF > java-rpmbuild-%{version}.files
+${_jvmdir}/java-rpmbuild
+${_jvmjardir}/java-rpmbuild
+EOF
+
 chmod 644 doc/* etc/httpd-javadoc.conf
 
 %clean
@@ -313,4 +340,5 @@ fi
 %defattr(-,root,root,-)
 %doc LICENSE.txt doc/* etc/httpd-javadoc.conf
 
-
+%files -n java-rpmbuild -f java-rpmbuild-%{version}.files
+%defattr(-,root,root)
