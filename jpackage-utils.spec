@@ -103,8 +103,6 @@ use with maven2, a header file for spec files etc.
 Summary:	Java SDK for building Mandriva java rpm packages
 Group:		Development/Java
 Requires:	java-devel-%{sdk_provider}
-# (anssi 11/2007) TODO test on cooker, urpmi bug, offers choice with sun sdk:
-Requires:	java-%{sdk_provider}
 Requires:	jpackage-utils = %{version}
 
 %description -n java-rpmbuild
