@@ -49,7 +49,6 @@ Source10:	jpackage.generic.macros
 Source11:	jpackage.override.mandriva.macros
 Patch0:		jpackage-utils-1.7.3-gcj-macros.patch
 Group:          Development/Java
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 # (anssi 12/2007): No longer noarch as different JDK is used on x86(_64) than
 # on other archs.
 #BuildArch:      noarch
