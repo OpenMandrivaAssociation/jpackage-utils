@@ -38,7 +38,7 @@
 
 Name:           jpackage-utils
 Version:        1.7.4
-Release:        %mkrel 1.0.1
+Release:        %mkrel 1.0.2
 Epoch:          0
 Summary:        JPackage utilities
 License:        BSD-style
