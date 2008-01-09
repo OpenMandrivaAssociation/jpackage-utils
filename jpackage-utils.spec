@@ -38,7 +38,7 @@
 
 Name:           jpackage-utils
 Version:        1.7.4
-Release:        %mkrel 1.0.3
+Release:        %mkrel 2.0.1
 Epoch:          0
 Summary:        JPackage utilities
 License:        BSD-style
@@ -47,18 +47,16 @@ Source0:        %{name}-%{version}.tar.bz2
 Source1:        classpath.security
 Source10:	jpackage.generic.macros
 Source11:	jpackage.override.mandriva.macros
-# not even applied ?? :
-Patch0:		jpackage-utils-1.7.3-gcj-macros.patch
-# (anssi 01/2008) fix missing backslash from end of line, "Macro % has illegal name"
-Patch1:		jpackage-utils-1.7.4-fix-macros.patch
 Group:          Development/Java
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 # (anssi 12/2007): No longer noarch as different JDK is used on x86(_64) than
 # on other archs.
 #BuildArch:      noarch
 AutoReqProv:    no
+%if 0
 BuildRequires:  %{__awk}, %{__grep}
 Requires:       /bin/egrep, %{__sed}, %{__perl}
+%endif
 Requires(post): rpm-helper
 # Contains invalid alternatives setup that breaks keytool symlink
 Conflicts:      kaffe-devel < 1.1.8-0.20070217.2
@@ -114,7 +112,6 @@ building Mandriva rpm packages of java software.
 
 %prep
 %setup -q
-%patch1 -p1
 
 %{__perl} -pi -e 's/(^%%_[ml]*iconsdir)/#\1/g' misc/macros.jpackage
 %{__perl} -pi -e 's/(^%%_menudir)/#\1/' misc/macros.jpackage
