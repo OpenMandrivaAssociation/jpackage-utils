@@ -38,7 +38,7 @@
 
 Name:           jpackage-utils
 Version:        1.7.4
-Release:        %mkrel 2.0.2
+Release:        %mkrel 2.0.3
 Epoch:          0
 Summary:        JPackage utilities
 License:        BSD-style
@@ -47,6 +47,7 @@ Source0:        %{name}-%{version}.tar.bz2
 Source1:        classpath.security
 Source10:	jpackage.generic.macros
 Source11:	jpackage.override.mandriva.macros
+Patch0:		java-functions-openjdk.patch
 Group:          Development/Java
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 # (anssi 12/2007): No longer noarch as different JDK is used on x86(_64) than
@@ -112,7 +113,7 @@ building Mandriva rpm packages of java software.
 
 %prep
 %setup -q
-
+%patch0 
 %{__perl} -pi -e 's/(^%%_[ml]*iconsdir)/#\1/g' misc/macros.jpackage
 %{__perl} -pi -e 's/(^%%_menudir)/#\1/' misc/macros.jpackage
 %{__perl} -pi -e 's|jre/sh|jre/bin|g' java-utils/java-functions 
