@@ -1,4 +1,4 @@
-# Copyright (c) 2000-2006, JPackage Project
+# Copyright (c) 2000-2008, JPackage Project
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -37,8 +37,8 @@
 %endif
 
 Name:           jpackage-utils
-Version:        1.7.4
-Release:        %mkrel 2.0.3
+Version:        1.7.5
+Release:        %mkrel 1.0.1
 Epoch:          0
 Summary:        JPackage utilities
 License:        BSD-style
@@ -286,11 +286,13 @@ cat <<EOF > %{name}-%{version}.files
 %dir ${_jnidir}
 %dir ${_jnidir}-*
 %dir ${_javadocdir}
+%dir ${_mavendepmapdir}
 ${_javadir}-utils/*
 %config(noreplace) %{_sysconfdir}/java/jpackage-release
 %config(noreplace) %{_sysconfdir}/java/java.conf
 %config(noreplace) %{_sysconfdir}/java/font.properties
 %{_sysconfdir}/rpm/macros.d/jpackage.*macros
+%config(noreplace) ${_mavendepmapdir}/maven2-depmap.xml
 %dir %{_prefix}/lib/security
 %{_prefix}/lib/security/classpath.security.real
 %dir %{_sysconfdir}/java/security
