@@ -31,14 +31,14 @@
 %define distver 1.7
 %define section free
 
-%define sdk_provider	icedtea
+%define sdk_provider	openjdk
 %ifnarch %{ix86} x86_64
 %define sdk_provider	gcj
 %endif
 
 Name:           jpackage-utils
 Version:        1.7.5
-Release:        %mkrel 1.0.1
+Release:        %mkrel 1.0.2
 Epoch:          0
 Summary:        JPackage utilities
 License:        BSD-style
