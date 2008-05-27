@@ -63,7 +63,7 @@ Requires(post): rpm-helper
 Conflicts:      kaffe-devel < 1.1.8-0.20070217.2
 
 %description
-Utilities for the JPackage Project <http://www.jpackage.org/>:
+Utilities for the JPackage Project:
 
 * %{_bindir}/build-classpath
                                 build the Java classpath in a portable manner
