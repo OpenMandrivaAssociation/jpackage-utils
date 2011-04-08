@@ -38,7 +38,7 @@
 
 Name:           jpackage-utils
 Version:        1.7.5
-Release:        %mkrel 4.0.7
+Release:        %mkrel 4.0.8
 Epoch:          0
 Summary:        JPackage utilities
 License:        BSD-style
@@ -113,7 +113,7 @@ building Mandriva rpm packages of java software.
 
 %prep
 %setup -q
-%patch0 
+%patch0 -p0
 %{__perl} -pi -e 's/(^%%_[ml]*iconsdir)/#\1/g' misc/macros.jpackage
 %{__perl} -pi -e 's/(^%%_menudir)/#\1/' misc/macros.jpackage
 %{__perl} -pi -e 's|jre/sh|jre/bin|g' java-utils/java-functions 
@@ -198,19 +198,19 @@ ln -s java-%{sdk_provider} %{buildroot}${_jvmdir}/java-rpmbuild
 ln -s java-%{sdk_provider} %{buildroot}${_jvmjardir}/java-rpmbuild
 
 ## BEGIN GCJ/CLASSPATH SPECIFIC ##
-%{__mkdir_p} %{buildroot}%{_prefix}/lib/security
-%{__cp} -a %{SOURCE1} %{buildroot}%{_prefix}/lib/security/classpath.security.real
+%{__mkdir_p} %{buildroot}%{_libdir}/security
+%{__cp} -a %{SOURCE1} %{buildroot}%{_libdir}/security/classpath.security.real
 
 %{__mkdir_p} %{buildroot}%{_bindir}
 %{__cat} > %{buildroot}%{_bindir}/rebuild-security-providers << EOF
 #!/bin/sh
 # Rebuild the list of security providers classpath.security
 
-cat %{_prefix}/lib/security/classpath.security \
+cat %{_libdir}/security/classpath.security \
   | grep -v "^security.provider." \
-  > %{_prefix}/lib/security/classpath.security.bak
-mv -f %{_prefix}/lib/security/classpath.security.bak \
-  %{_prefix}/lib/security/classpath.security
+  > %{_libdir}/security/classpath.security.bak
+mv -f %{_libdir}/security/classpath.security.bak \
+  %{_libdir}/security/classpath.security
 
 providers=\$(ls %{_sysconfdir}/java/security/security.d | sort \
   | awk -F- '{ print \$2 }')
@@ -223,7 +223,7 @@ do
   *)
   count=\$((count + 1))
   echo "security.provider."\$count"="\$provider \
-    >> %{_prefix}/lib/security/classpath.security
+    >> %{_libdir}/security/classpath.security
   ;;
   esac
 done
@@ -239,8 +239,8 @@ touch 4000-gnu.javax.net.ssl.provider.Jessie
 touch 5000-gnu.javax.security.auth.callback.GnuCallbacks
 popd
 
-%{__mkdir_p} %{buildroot}%{_prefix}/lib
-%{__cat} > %{buildroot}%{_prefix}/lib/logging.properties.real << EOF
+%{__mkdir_p} %{buildroot}%{_libdir}
+%{__cat} > %{buildroot}%{_libdir}/logging.properties.real << EOF
 # Default logging properties.
 # See javadoc in java.util.logging.LogManager to information on
 # overriding these settings.  Most of the defaults are compiled in, so
@@ -293,12 +293,12 @@ ${_javadir}-utils/*
 %config(noreplace) %{_sysconfdir}/java/font.properties
 %{_sysconfdir}/rpm/macros.d/jpackage.*macros
 %config(noreplace) ${_mavendepmapdir}/maven2-depmap.xml
-%dir %{_prefix}/lib/security
-%{_prefix}/lib/security/classpath.security.real
+%dir %{_libdir}/security
+%{_libdir}/security/classpath.security.real
 %dir %{_sysconfdir}/java/security
 %dir %{_sysconfdir}/java/security/security.d
 %{_sysconfdir}/java/security/security.d/*
-%{_prefix}/lib/logging.properties.real
+%{_libdir}/logging.properties.real
 %dir %{_javadir}/gcj-endorsed
 EOF
 
@@ -320,23 +320,23 @@ if test -f "%{_libdir}/rpm/rpmrc" && egrep -q '^macrofiles:.*%{_sysconfdir}/rpm/
 fi
 
 %if 0
-%create_ghostfile %{_prefix}/lib/security/classpath.security root root 644
+%create_ghostfile %{_libdir}/security/classpath.security root root 644
 %endif
-%{__cp} -af %{_prefix}/lib/security/classpath.security.real %{_prefix}/lib/security/classpath.security
-%{__cp} -af %{_prefix}/lib/logging.properties.real %{_prefix}/lib/logging.properties
+%{__cp} -af %{_libdir}/security/classpath.security.real %{_libdir}/security/classpath.security
+%{__cp} -af %{_libdir}/logging.properties.real %{_libdir}/logging.properties
 if [ -x %{_bindir}/rebuild-security-providers ]; then
   %{_bindir}/rebuild-security-providers
 fi
 
 %triggerin -- libgcj7-base
-%{__cp} -af %{_prefix}/lib/security/classpath.security.real %{_prefix}/lib/security/classpath.security
-%{__cp} -af %{_prefix}/lib/logging.properties.real %{_prefix}/lib/logging.properties
+%{__cp} -af %{_libdir}/security/classpath.security.real %{_libdir}/security/classpath.security
+%{__cp} -af %{_libdir}/logging.properties.real %{_libdir}/logging.properties
 
 %triggerpostun -- libgcj7-base
-%{__cp} -af %{_prefix}/lib/security/classpath.security.real %{_prefix}/lib/security/classpath.security
-%{__cp} -af %{_prefix}/lib/logging.properties.real %{_prefix}/lib/logging.properties
+%{__cp} -af %{_libdir}/security/classpath.security.real %{_libdir}/security/classpath.security
+%{__cp} -af %{_libdir}/logging.properties.real %{_libdir}/logging.properties
 # caused by triggerin:
-%{__rm} -f %{_prefix}/lib/security/classpath.security.rpmsave
+%{__rm} -f %{_libdir}/security/classpath.security.rpmsave
 
 %files -f %{name}-%{version}.files
 %defattr(-,root,root,-)
