@@ -31,6 +31,7 @@
 %define distver 1.7
 %define section free
 
+%define	gcj_support 0
 %define sdk_provider	openjdk
 %ifnarch %{ix86} x86_64
 %define sdk_provider	gcj
