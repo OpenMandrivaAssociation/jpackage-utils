@@ -38,16 +38,24 @@
 
 Name:           jpackage-utils
 Version:        1.7.5
-Release:        %mkrel 4.0.8
+Release:        4.11
 Epoch:          0
 Summary:        JPackage utilities
 License:        BSD-style
 URL:            http://www.jpackage.org/
 Source0:        %{name}-%{version}.tar.bz2
 Source1:        classpath.security
+Source2:        %{name}-README
+Source3:        abs2rel.sh
+Source4:        abs2rel.lua
 Source10:	jpackage.generic.macros
 Source11:	jpackage.override.mandriva.macros
 Patch0:		java-functions-openjdk.patch
+Patch1:         %{name}-enable-gcj-support.patch
+Patch2:         %{name}-own-mavendirs.patch
+Patch3:         %{name}-prefer-jre.patch
+Patch4:         %{name}-set-classpath.patch
+
 Group:          Development/Java
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 # (anssi 12/2007): No longer noarch as different JDK is used on x86(_64) than
@@ -114,9 +122,14 @@ building Mandriva rpm packages of java software.
 %prep
 %setup -q
 %patch0 -p0
+%patch1 -p0
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
 %{__perl} -pi -e 's/(^%%_[ml]*iconsdir)/#\1/g' misc/macros.jpackage
 %{__perl} -pi -e 's/(^%%_menudir)/#\1/' misc/macros.jpackage
 %{__perl} -pi -e 's|jre/sh|jre/bin|g' java-utils/java-functions 
+cp %{SOURCE2} .
 
 %build
 echo "JPackage release %{distver} (%{distribution}) for %{_target_cpu}" \
@@ -132,12 +145,12 @@ for dir in \
     jvmdir jvmjardir jvmprivdir \
     jvmlibdir jvmdatadir jvmsysconfdir \
     jvmcommonlibdir jvmcommondatadir jvmcommonsysconfdir \
-    javadir jnidir javadocdir mavendepmapdir; do
-  export _${dir}=$(rpm --eval $(%{__grep} -E "^%_${dir}\b" misc/macros.jpackage | %{__awk} '{ print $2 }'))
+    javadir jnidir javadocdir mavenpomdir \
+    mavendepmapdir mavendepmapfragdir; do
+  export _${dir}=$(rpm --eval $(%{__grep} -E "^%_${dir}\b" \
+    misc/macros.jpackage | %{__awk} '{ print $2 }'))
 done
 
-install -dm 755 ${RPM_BUILD_ROOT}%{_bindir}
-install -dm 755 ${RPM_BUILD_ROOT}%{_sysconfdir}/{java,rpm/macros.d}
 install -dm 755 ${RPM_BUILD_ROOT}${_jvmdir}
 install -dm 755 ${RPM_BUILD_ROOT}${_jvmjardir}
 install -dm 755 ${RPM_BUILD_ROOT}${_jvmprivdir}
@@ -148,18 +161,34 @@ install -dm 755 ${RPM_BUILD_ROOT}${_jvmcommonlibdir}
 install -dm 755 ${RPM_BUILD_ROOT}${_jvmcommondatadir}
 install -dm 755 ${RPM_BUILD_ROOT}${_jvmcommonsysconfdir}
 install -dm 755 ${RPM_BUILD_ROOT}${_javadir}
+install -dm 755 ${RPM_BUILD_ROOT}${_javadir}-utils
+install -dm 755 ${RPM_BUILD_ROOT}${_javadir}-ext
+install -dm 755 ${RPM_BUILD_ROOT}${_javadir}-{1.3.1,1.4.0,1.4.1,1.4.2}
+install -dm 755 ${RPM_BUILD_ROOT}${_javadir}-{1.5.0,1.6.0,1.7.0}
 install -dm 755 ${RPM_BUILD_ROOT}${_jnidir}
-install -dm 755 ${RPM_BUILD_ROOT}${_javadir}-{utils,ext,1.4.0,1.4.1,1.4.2,1.5.0,1.6.0,1.7.0}
-install -dm 755 ${RPM_BUILD_ROOT}${_jnidir}-{ext,1.4.0,1.4.1,1.4.2,1.5.0,1.6.0,1.7.0}
+install -dm 755 ${RPM_BUILD_ROOT}${_jnidir}-ext
+install -dm 755 ${RPM_BUILD_ROOT}${_jnidir}-{1.3.1,1.4.0,1.4.1,1.4.2}
+install -dm 755 ${RPM_BUILD_ROOT}${_jnidir}-{1.5.0,1.6.0,1.7.0}
 install -dm 755 ${RPM_BUILD_ROOT}${_javadocdir}
-install -dm 755 ${RPM_BUILD_ROOT}${_mavendepmapdir}
+install -dm 755 ${RPM_BUILD_ROOT}${_mavenpomdir}
+install -dm 755 ${RPM_BUILD_ROOT}${_mavendepmapfragdir}
 
-install -pm 755 bin/* ${RPM_BUILD_ROOT}%{_bindir}
-install -pm 644 etc/font.properties ${RPM_BUILD_ROOT}%{_sysconfdir}/java
+pushd bin
+for i in *; do
+	install -pm 755 -D $i ${RPM_BUILD_ROOT}%{_bindir}/$i
+done
+popd
+install -m644 etc/font.properties -D ${RPM_BUILD_ROOT}%{_sysconfdir}/java/font.properties
+
+# Install abs2rel scripts
+install -pm 755 %{SOURCE3}  ${RPM_BUILD_ROOT}%{_javadir}-utils
+install -pm 644 %{SOURCE4} ${RPM_BUILD_ROOT}%{_javadir}-utils
 
 # Create an initial (empty) depmap
-echo -e "<dependencies>\\n" > ${RPM_BUILD_ROOT}${_mavendepmapdir}/maven2-depmap.xml
-echo -e "</dependencies>\\n" >> ${RPM_BUILD_ROOT}${_mavendepmapdir}/maven2-depmap.xml
+echo -e "<dependencies>\\n" \
+  > ${RPM_BUILD_ROOT}${_mavendepmapdir}/maven2-depmap.xml
+echo -e "</dependencies>\\n" \
+  >> ${RPM_BUILD_ROOT}${_mavendepmapdir}/maven2-depmap.xml
 
 cat > etc/java.conf << EOF
 # System-wide Java configuration file                                -*- sh -*-
@@ -175,17 +204,25 @@ JNI_LIBDIR=${_jnidir}
 # Root of all JVM installations
 JVM_ROOT=${_jvmdir}
 
-# You can define a system-wide JVM root here if you're not using the default one
+# You can define a system-wide JVM root here if you're not using the
+# default one.
+#
+# If you have the a base JRE package installed
+# (e.g. java-1.6.0-openjdk):
 #JAVA_HOME=\$JVM_ROOT/jre
+#
+# If you have the a devel JDK package installed
+# (e.g. java-1.6.0-openjdk-devel):
+#JAVA_HOME=\$JVM_ROOT/java
 
 # Options to pass to the java interpreter
-#OPTIONS="-Dgnu.java.awt.peer.gtk.Graphics=Graphics2D"
+JAVACMD_OPTS=
 EOF
 
-install -pm 644 etc/java.conf ${RPM_BUILD_ROOT}%{_sysconfdir}/java
-install -pm 644 etc/jpackage-release ${RPM_BUILD_ROOT}%{_sysconfdir}/java
-install -pm 644 java-utils/* ${RPM_BUILD_ROOT}${_javadir}-utils
-install -pm 644 misc/macros.jpackage ${RPM_BUILD_ROOT}%{_sysconfdir}/rpm/macros.d/jpackage.macros
+install -pm 644 etc/java.conf ${RPM_BUILD_ROOT}%{_sysconfdir}/java/java.conf
+install -pm 644 etc/jpackage-release -D ${RPM_BUILD_ROOT}%{_sysconfdir}/java/jpackage-release
+install -pm 644 java-utils/java-functions -D ${RPM_BUILD_ROOT}${_javadir}-utils
+install -m644 misc/macros.jpackage -D ${RPM_BUILD_ROOT}%{_sysconfdir}/rpm/macros.d/jpackage.macros
 install -m644 %{SOURCE10} -D %{buildroot}%{_sysconfdir}/rpm/macros.d/jpackage.generic.macros
 install -m644 %{SOURCE11} -D %{buildroot}%{_sysconfdir}/rpm/macros.d/jpackage.override.mandriva.macros
 
@@ -254,24 +291,14 @@ EOF
 %{__mkdir_p} %{buildroot}%{_javadir}/gcj-endorsed
 ## END GCJ/CLASSPATH SPECIFIC ##
 
+
 cat <<EOF > %{name}-%{version}.files
-%attr(0755,root,root) %{_bindir}/build-classpath
-%attr(0755,root,root) %{_bindir}/build-classpath-directory
-%attr(0755,root,root) %{_bindir}/build-jar-repository
-%attr(0755,root,root) %{_bindir}/check-binary-files
-%attr(0755,root,root) %{_bindir}/clean-binary-files
-%attr(0755,root,root) %{_bindir}/create-jar-links
-%attr(0755,root,root) %{_bindir}/diff-jars
-%attr(0755,root,root) %{_bindir}/find-jar
-%attr(0755,root,root) %{_bindir}/jvmjar
-%attr(0755,root,root) %{_bindir}/rebuild-jar-repository
-%attr(0755,root,root) %{_bindir}/rebuild-security-providers 
-%config(noreplace) %{_sysconfdir}/maven/maven2-depmap.xml
-%{_mandir}/man1/build-classpath.1*
-%{_mandir}/man1/build-jar-repository.1*
-%{_mandir}/man1/diff-jars.1*
-%{_mandir}/man1/rebuild-jar-repository.1*
+%{_bindir}/*
+%{_mandir}/man1/*
 %dir %{_sysconfdir}/java
+%if %{gcj_support}
+%{_sysconfdir}/java/security
+%endif
 %dir ${_jvmdir}
 %dir ${_jvmjardir}
 %dir ${_jvmprivdir}
@@ -286,9 +313,12 @@ cat <<EOF > %{name}-%{version}.files
 %dir ${_jnidir}
 %dir ${_jnidir}-*
 %dir ${_javadocdir}
+%dir %{_datadir}/maven2
+%dir ${_mavenpomdir}
 %dir ${_mavendepmapdir}
+%dir ${_mavendepmapfragdir}
 ${_javadir}-utils/*
-%config(noreplace) %{_sysconfdir}/java/jpackage-release
+%config %{_sysconfdir}/java/jpackage-release
 %config(noreplace) %{_sysconfdir}/java/java.conf
 %config(noreplace) %{_sysconfdir}/java/font.properties
 %{_sysconfdir}/rpm/macros.d/jpackage.*macros
@@ -309,30 +339,18 @@ EOF
 
 chmod 644 doc/* etc/httpd-javadoc.conf
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
-
 %post
-if test -f "%{_libdir}/rpm/rpmrc" && egrep -q '^macrofiles:.*%{_sysconfdir}/rpm/macros\.jpackage' "%{_libdir}/rpm/rpmrc"; then
-  %{__perl} -pi -e \
-    's,^(macrofiles:.*):%{_sysconfdir}/rpm/macros\.jpackage,$1,' "%{_libdir}/rpm/rpmrc"
-fi
-
-%if 0
-%create_ghostfile %{_libdir}/security/classpath.security root root 644
-%endif
 %{__cp} -af %{_libdir}/security/classpath.security.real %{_libdir}/security/classpath.security
 %{__cp} -af %{_libdir}/logging.properties.real %{_libdir}/logging.properties
 if [ -x %{_bindir}/rebuild-security-providers ]; then
   %{_bindir}/rebuild-security-providers
 fi
 
-%triggerin -- libgcj7-base
+%triggerin -- libgcj12-base
 %{__cp} -af %{_libdir}/security/classpath.security.real %{_libdir}/security/classpath.security
 %{__cp} -af %{_libdir}/logging.properties.real %{_libdir}/logging.properties
 
-%triggerpostun -- libgcj7-base
+%triggerpostun -- libgcj12-base
 %{__cp} -af %{_libdir}/security/classpath.security.real %{_libdir}/security/classpath.security
 %{__cp} -af %{_libdir}/logging.properties.real %{_libdir}/logging.properties
 # caused by triggerin:
@@ -340,7 +358,7 @@ fi
 
 %files -f %{name}-%{version}.files
 %defattr(-,root,root,-)
-%doc LICENSE.txt doc/* etc/httpd-javadoc.conf
+%doc jpackage-utils-README LICENSE.txt HEADER.JPP doc/* etc/httpd-javadoc.conf
 
 %files -n java-rpmbuild -f java-rpmbuild-%{version}.files
 %defattr(-,root,root)
