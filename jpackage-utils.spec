@@ -138,7 +138,7 @@ echo "JPackage release %{distver} (%{distribution}) for %{_target_cpu}" \
 
 
 %install
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 # Pull macros out of macros.jpackage and emulate them during install for
 # smooth bootstrapping experience.
@@ -152,44 +152,44 @@ for dir in \
     misc/macros.jpackage | %{__awk} '{ print $2 }'))
 done
 
-install -dm 755 ${RPM_BUILD_ROOT}${_jvmdir}
-install -dm 755 ${RPM_BUILD_ROOT}${_jvmjardir}
-install -dm 755 ${RPM_BUILD_ROOT}${_jvmprivdir}
-install -dm 755 ${RPM_BUILD_ROOT}${_jvmlibdir}
-install -dm 755 ${RPM_BUILD_ROOT}${_jvmdatadir}
-install -dm 755 ${RPM_BUILD_ROOT}${_jvmsysconfdir}
-install -dm 755 ${RPM_BUILD_ROOT}${_jvmcommonlibdir}
-install -dm 755 ${RPM_BUILD_ROOT}${_jvmcommondatadir}
-install -dm 755 ${RPM_BUILD_ROOT}${_jvmcommonsysconfdir}
-install -dm 755 ${RPM_BUILD_ROOT}${_javadir}
-install -dm 755 ${RPM_BUILD_ROOT}${_javadir}-utils
-install -dm 755 ${RPM_BUILD_ROOT}${_javadir}-ext
-install -dm 755 ${RPM_BUILD_ROOT}${_javadir}-{1.3.1,1.4.0,1.4.1,1.4.2}
-install -dm 755 ${RPM_BUILD_ROOT}${_javadir}-{1.5.0,1.6.0,1.7.0}
-install -dm 755 ${RPM_BUILD_ROOT}${_jnidir}
-install -dm 755 ${RPM_BUILD_ROOT}${_jnidir}-ext
-install -dm 755 ${RPM_BUILD_ROOT}${_jnidir}-{1.3.1,1.4.0,1.4.1,1.4.2}
-install -dm 755 ${RPM_BUILD_ROOT}${_jnidir}-{1.5.0,1.6.0,1.7.0}
-install -dm 755 ${RPM_BUILD_ROOT}${_javadocdir}
-install -dm 755 ${RPM_BUILD_ROOT}${_mavenpomdir}
-install -dm 755 ${RPM_BUILD_ROOT}${_mavendepmapfragdir}
+install -dm 755 %{buildroot}${_jvmdir}
+install -dm 755 %{buildroot}${_jvmjardir}
+install -dm 755 %{buildroot}${_jvmprivdir}
+install -dm 755 %{buildroot}${_jvmlibdir}
+install -dm 755 %{buildroot}${_jvmdatadir}
+install -dm 755 %{buildroot}${_jvmsysconfdir}
+install -dm 755 %{buildroot}${_jvmcommonlibdir}
+install -dm 755 %{buildroot}${_jvmcommondatadir}
+install -dm 755 %{buildroot}${_jvmcommonsysconfdir}
+install -dm 755 %{buildroot}${_javadir}
+install -dm 755 %{buildroot}${_javadir}-utils
+install -dm 755 %{buildroot}${_javadir}-ext
+install -dm 755 %{buildroot}${_javadir}-{1.3.1,1.4.0,1.4.1,1.4.2}
+install -dm 755 %{buildroot}${_javadir}-{1.5.0,1.6.0,1.7.0}
+install -dm 755 %{buildroot}${_jnidir}
+install -dm 755 %{buildroot}${_jnidir}-ext
+install -dm 755 %{buildroot}${_jnidir}-{1.3.1,1.4.0,1.4.1,1.4.2}
+install -dm 755 %{buildroot}${_jnidir}-{1.5.0,1.6.0,1.7.0}
+install -dm 755 %{buildroot}${_javadocdir}
+install -dm 755 %{buildroot}${_mavenpomdir}
+install -dm 755 %{buildroot}${_mavendepmapfragdir}
 
 pushd bin
 for i in *; do
-	install -pm 755 -D $i ${RPM_BUILD_ROOT}%{_bindir}/$i
+	install -pm 755 -D $i %{buildroot}%{_bindir}/$i
 done
 popd
-install -m644 etc/font.properties -D ${RPM_BUILD_ROOT}%{_sysconfdir}/java/font.properties
+install -m644 etc/font.properties -D %{buildroot}%{_sysconfdir}/java/font.properties
 
 # Install abs2rel scripts
-install -pm 755 %{SOURCE3}  ${RPM_BUILD_ROOT}%{_javadir}-utils
-install -pm 644 %{SOURCE4} ${RPM_BUILD_ROOT}%{_javadir}-utils
+install -pm 755 %{SOURCE3}  %{buildroot}%{_javadir}-utils
+install -pm 644 %{SOURCE4} %{buildroot}%{_javadir}-utils
 
 # Create an initial (empty) depmap
 echo -e "<dependencies>\\n" \
-  > ${RPM_BUILD_ROOT}${_mavendepmapdir}/maven2-depmap.xml
+  > %{buildroot}${_mavendepmapdir}/maven2-depmap.xml
 echo -e "</dependencies>\\n" \
-  >> ${RPM_BUILD_ROOT}${_mavendepmapdir}/maven2-depmap.xml
+  >> %{buildroot}${_mavendepmapdir}/maven2-depmap.xml
 
 cat > etc/java.conf << EOF
 # System-wide Java configuration file                                -*- sh -*-
@@ -220,17 +220,17 @@ JVM_ROOT=${_jvmdir}
 JAVACMD_OPTS=
 EOF
 
-install -pm 644 etc/java.conf ${RPM_BUILD_ROOT}%{_sysconfdir}/java/java.conf
-install -pm 644 etc/jpackage-release -D ${RPM_BUILD_ROOT}%{_sysconfdir}/java/jpackage-release
-install -pm 644 java-utils/java-functions -D ${RPM_BUILD_ROOT}${_javadir}-utils
-install -m644 misc/macros.jpackage -D ${RPM_BUILD_ROOT}%{_sysconfdir}/rpm/macros.d/jpackage.macros
+install -pm 644 etc/java.conf %{buildroot}%{_sysconfdir}/java/java.conf
+install -pm 644 etc/jpackage-release -D %{buildroot}%{_sysconfdir}/java/jpackage-release
+install -pm 644 java-utils/java-functions -D %{buildroot}${_javadir}-utils
+install -m644 misc/macros.jpackage -D %{buildroot}%{_sysconfdir}/rpm/macros.d/jpackage.macros
 install -m644 %{SOURCE10} -D %{buildroot}%{_sysconfdir}/rpm/macros.d/jpackage.generic.macros
 install -m644 %{SOURCE11} -D %{buildroot}%{_sysconfdir}/rpm/macros.d/jpackage.override.mandriva.macros
 
-%{__mkdir_p} ${RPM_BUILD_ROOT}%{_mandir}/man1
-install -pm 644 man/* ${RPM_BUILD_ROOT}%{_mandir}/man1
-%{__mkdir_p} ${RPM_BUILD_ROOT}${_javadir}-utils/xml
-install -pm 644 xml/* ${RPM_BUILD_ROOT}${_javadir}-utils/xml
+%{__mkdir_p} %{buildroot}%{_mandir}/man1
+install -pm 644 man/* %{buildroot}%{_mandir}/man1
+%{__mkdir_p} %{buildroot}${_javadir}-utils/xml
+install -pm 644 xml/* %{buildroot}${_javadir}-utils/xml
 
 ln -s java-%{sdk_provider} %{buildroot}${_jvmdir}/java-rpmbuild
 ln -s java-%{sdk_provider} %{buildroot}${_jvmjardir}/java-rpmbuild
