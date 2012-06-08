@@ -39,7 +39,7 @@
 
 Name:           jpackage-utils
 Version:        1.7.5
-Release:        4.11
+Release:        4.12
 Epoch:          0
 Summary:        JPackage utilities
 License:        BSD-style
@@ -235,6 +235,11 @@ install -pm 644 xml/* %{buildroot}${_javadir}-utils/xml
 ln -s java-%{sdk_provider} %{buildroot}${_jvmdir}/java-rpmbuild
 ln -s java-%{sdk_provider} %{buildroot}${_jvmjardir}/java-rpmbuild
 
+#(proyvind): as most autofoo stuff seems to use this path for java includes
+# and tons of packages needs fixes to work around it, we'll just try add a
+# symlink here in hope for it to improve the awkward situation a bit..
+ln -s %{_jvmdir}/java/include %{buildroot}%{_javadir}/
+
 ## BEGIN GCJ/CLASSPATH SPECIFIC ##
 %{__mkdir_p} %{buildroot}%{_libdir}/security
 %{__cp} -a %{SOURCE1} %{buildroot}%{_libdir}/security/classpath.security.real
@@ -271,7 +276,7 @@ EOF
 pushd  %{buildroot}%{_sysconfdir}/java/security/security.d
 touch 1000-gnu.java.security.provider.Gnu
 touch 1500-org.bouncycastle.jce.provider.BouncyCastleProvider
-touch 2000-gnu.javax.crypto.jce.GnuCrypto
+touch 2000-gnu.javax.crypto.jce.GnuCryptojava
 touch 3000-gnu.javax.crypto.jce.GnuSasl
 touch 4000-gnu.javax.net.ssl.provider.Jessie
 touch 5000-gnu.javax.security.auth.callback.GnuCallbacks
@@ -336,6 +341,7 @@ EOF
 cat <<EOF > java-rpmbuild-%{version}.files
 ${_jvmdir}/java-rpmbuild
 ${_jvmjardir}/java-rpmbuild
+%{_javadir}/include
 EOF
 
 chmod 644 doc/* etc/httpd-javadoc.conf
