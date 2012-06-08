@@ -37,6 +37,9 @@
 %define sdk_provider	gcj
 %endif
 
+%define _enable_debug_packages %{nil}
+%define debug_package %{nil}
+
 Name:           jpackage-utils
 Version:        1.7.5
 Release:        4.12
