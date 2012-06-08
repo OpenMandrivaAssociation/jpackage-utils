@@ -42,7 +42,7 @@
 
 Name:           jpackage-utils
 Version:        1.7.5
-Release:        4.12
+Release:        4.13
 Epoch:          0
 Summary:        JPackage utilities
 License:        BSD-style
@@ -238,11 +238,6 @@ install -pm 644 xml/* %{buildroot}${_javadir}-utils/xml
 ln -s java-%{sdk_provider} %{buildroot}${_jvmdir}/java-rpmbuild
 ln -s java-%{sdk_provider} %{buildroot}${_jvmjardir}/java-rpmbuild
 
-#(proyvind): as most autofoo stuff seems to use this path for java includes
-# and tons of packages needs fixes to work around it, we'll just try add a
-# symlink here in hope for it to improve the awkward situation a bit..
-ln -s %{_jvmdir}/java/include %{buildroot}%{_javadir}/
-
 ## BEGIN GCJ/CLASSPATH SPECIFIC ##
 %{__mkdir_p} %{buildroot}%{_libdir}/security
 %{__cp} -a %{SOURCE1} %{buildroot}%{_libdir}/security/classpath.security.real
@@ -344,7 +339,6 @@ EOF
 cat <<EOF > java-rpmbuild-%{version}.files
 ${_jvmdir}/java-rpmbuild
 ${_jvmjardir}/java-rpmbuild
-%{_javadir}/include
 EOF
 
 chmod 644 doc/* etc/httpd-javadoc.conf
