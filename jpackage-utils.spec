@@ -42,8 +42,8 @@
 
 Name:           jpackage-utils
 Version:        1.7.5
-Release:        4.13
-Epoch:          0
+Release:        4.14
+Group:          Development/Java
 Summary:        JPackage utilities
 License:        BSD-style
 URL:            http://www.jpackage.org/
@@ -60,11 +60,9 @@ Patch2:         %{name}-own-mavendirs.patch
 Patch3:         %{name}-prefer-jre.patch
 Patch4:         %{name}-set-classpath.patch
 
-Group:          Development/Java
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
-# (anssi 12/2007): No longer noarch as different JDK is used on x86(_64) than
-# on other archs.
-#BuildArch:      noarch
+Requires:       coreutils
+Requires:       javapackages-tools
+
 AutoReqProv:    no
 %if 0
 BuildRequires:  %{__awk}, %{__grep}
