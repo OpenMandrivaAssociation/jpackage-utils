@@ -42,7 +42,7 @@
 
 Name:           jpackage-utils
 Version:        1.7.5
-Release:        4.14
+Release:        5
 Group:          Development/Java
 Summary:        JPackage utilities
 License:        BSD-style
