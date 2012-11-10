@@ -1,0 +1,8 @@
+sources:
+  "abs2rel.lua:"	6cb5cd6ebd9504a8d75f751b14525d4305d464c8
+  "abs2rel.sh:"	ac3c76650cfe2d9eb22694aeaed9c9c79e13df2c
+  "classpath.security:"	bc3ac221bbea4ada4e25098066e1cbdc09efbc9c
+  "jpackage.generic.macros:"	1ad4448094d0400be55fe6d579c1f19915c9506c
+  "jpackage.override.mandriva.macros:"	d39237566db647a0f586e8bbfe312e07a6255bc4
+  "jpackage-utils-1.7.5.tar.bz2:"	a0576ea1b11c3a553bfd228c96fb3056aadc1311
+  "jpackage-utils-README:"	42e46fd71f581b9823d60b1ede3de2090c435e14
