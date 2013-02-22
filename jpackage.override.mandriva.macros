@@ -1,0 +1,5 @@
+%gcj_support 0
+
+# We use only predefined JDK for building packages
+%java_home	%{_jvmdir}/java-rpmbuild
+%java		%{java_home}/bin/java
