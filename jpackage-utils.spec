@@ -40,37 +40,36 @@
 %define _enable_debug_packages %{nil}
 %define debug_package %{nil}
 
-Name:           jpackage-utils
-Version:        1.7.5
-Release:        6
-Group:          Development/Java
-Summary:        JPackage utilities
-License:        BSD-style
-URL:            http://www.jpackage.org/
-Source0:        %{name}-%{version}.tar.bz2
-Source1:        classpath.security
-Source2:        %{name}-README
-Source3:        abs2rel.sh
-Source4:        abs2rel.lua
+Summary:	JPackage utilities
+Name:		jpackage-utils
+Version:	1.7.5
+Release:	6
+Group:		Development/Java
+License:	BSD-style
+Url:		http://www.jpackage.org/
+Source0:	%{name}-%{version}.tar.bz2
+Source1:	classpath.security
+Source2:	%{name}-README
+Source3:	abs2rel.sh
+Source4:	abs2rel.lua
 Source10:	jpackage.generic.macros
 Source11:	jpackage.override.mandriva.macros
-Patch0:		java-functions-openjdk.patch
-Patch1:         %{name}-enable-gcj-support.patch
-Patch2:         %{name}-own-mavendirs.patch
-Patch3:         %{name}-prefer-jre.patch
-Patch4:         %{name}-set-classpath.patch
+Patch0:	java-functions-openjdk.patch
+Patch1:	%{name}-enable-gcj-support.patch
+Patch2:	%{name}-own-mavendirs.patch
+Patch3:	%{name}-prefer-jre.patch
+Patch4:	%{name}-set-classpath.patch
 
-Requires:       coreutils
-Requires:       javapackages-tools
-
-AutoReqProv:    no
+AutoReqProv:	no
 %if 0
-BuildRequires:  %{__awk}, %{__grep}
-Requires:       /bin/egrep, %{__sed}, %{__perl}
+BuildRequires:	%{__awk}, %{__grep}
+Requires:	coreutils
+Requires:	javapackages-tools
+Requires:	/bin/egrep, %{__sed}, %{__perl}
 %endif
-Requires(post): rpm-helper
+Requires(post):	rpm-helper
 # Contains invalid alternatives setup that breaks keytool symlink
-Conflicts:      kaffe-devel < 1.1.8-0.20070217.2
+Conflicts:	kaffe-devel < 1.1.8-0.20070217.2
 
 %description
 Utilities for the JPackage Project:
@@ -128,9 +127,9 @@ building Mandriva rpm packages of java software.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
-%{__perl} -pi -e 's/(^%%_[ml]*iconsdir)/#\1/g' misc/macros.jpackage
-%{__perl} -pi -e 's/(^%%_menudir)/#\1/' misc/macros.jpackage
-%{__perl} -pi -e 's|jre/sh|jre/bin|g' java-utils/java-functions 
+sed -i -e 's/(^%%_[ml]*iconsdir)/#\1/g' misc/macros.jpackage
+sed -i -e 's/(^%%_menudir)/#\1/' misc/macros.jpackage
+sed -i -e 's|jre/sh|jre/bin|g' java-utils/java-functions 
 cp %{SOURCE2} .
 
 %build
@@ -139,8 +138,6 @@ echo "JPackage release %{distver} (%{distribution}) for %{_target_cpu}" \
 
 
 %install
-rm -rf %{buildroot}
-
 # Pull macros out of macros.jpackage and emulate them during install for
 # smooth bootstrapping experience.
 for dir in \
@@ -228,19 +225,19 @@ install -m644 misc/macros.jpackage -D %{buildroot}%{_sysconfdir}/rpm/macros.d/jp
 install -m644 %{SOURCE10} -D %{buildroot}%{_sysconfdir}/rpm/macros.d/jpackage.generic.macros
 install -m644 %{SOURCE11} -D %{buildroot}%{_sysconfdir}/rpm/macros.d/jpackage.override.mandriva.macros
 
-%{__mkdir_p} %{buildroot}%{_mandir}/man1
+mkdir -p %{buildroot}%{_mandir}/man1
 install -pm 644 man/* %{buildroot}%{_mandir}/man1
-%{__mkdir_p} %{buildroot}${_javadir}-utils/xml
+mkdir -p %{buildroot}${_javadir}-utils/xml
 install -pm 644 xml/* %{buildroot}${_javadir}-utils/xml
 
 ln -s java-%{sdk_provider} %{buildroot}${_jvmdir}/java-rpmbuild
 ln -s java-%{sdk_provider} %{buildroot}${_jvmjardir}/java-rpmbuild
 
 ## BEGIN GCJ/CLASSPATH SPECIFIC ##
-%{__mkdir_p} %{buildroot}%{_libdir}/security
-%{__cp} -a %{SOURCE1} %{buildroot}%{_libdir}/security/classpath.security.real
+mkdir -p %{buildroot}%{_libdir}/security
+cp -a %{SOURCE1} %{buildroot}%{_libdir}/security/classpath.security.real
 
-%{__mkdir_p} %{buildroot}%{_bindir}
+mkdir -p %{buildroot}%{_bindir}
 %{__cat} > %{buildroot}%{_bindir}/rebuild-security-providers << EOF
 #!/bin/sh
 # Rebuild the list of security providers classpath.security
@@ -268,7 +265,7 @@ do
 done
 EOF
 
-%{__mkdir_p} %{buildroot}%{_sysconfdir}/java/security/security.d
+mkdir -p %{buildroot}%{_sysconfdir}/java/security/security.d
 pushd  %{buildroot}%{_sysconfdir}/java/security/security.d
 touch 1000-gnu.java.security.provider.Gnu
 touch 1500-org.bouncycastle.jce.provider.BouncyCastleProvider
@@ -278,7 +275,7 @@ touch 4000-gnu.javax.net.ssl.provider.Jessie
 touch 5000-gnu.javax.security.auth.callback.GnuCallbacks
 popd
 
-%{__mkdir_p} %{buildroot}%{_libdir}
+mkdir -p %{buildroot}%{_libdir}
 %{__cat} > %{buildroot}%{_libdir}/logging.properties.real << EOF
 # Default logging properties.
 # See javadoc in java.util.logging.LogManager to information on
@@ -290,7 +287,7 @@ handlers = java.util.logging.ConsoleHandler
 .level = OFF
 EOF
 
-%{__mkdir_p} %{buildroot}%{_javadir}/gcj-endorsed
+mkdir -p %{buildroot}%{_javadir}/gcj-endorsed
 ## END GCJ/CLASSPATH SPECIFIC ##
 
 
@@ -342,25 +339,24 @@ EOF
 chmod 644 doc/* etc/httpd-javadoc.conf
 
 %post
-%{__cp} -af %{_libdir}/security/classpath.security.real %{_libdir}/security/classpath.security
-%{__cp} -af %{_libdir}/logging.properties.real %{_libdir}/logging.properties
+cp -af %{_libdir}/security/classpath.security.real %{_libdir}/security/classpath.security
+cp -af %{_libdir}/logging.properties.real %{_libdir}/logging.properties
 if [ -x %{_bindir}/rebuild-security-providers ]; then
   %{_bindir}/rebuild-security-providers
 fi
 
 %triggerin -- libgcj12-base
-%{__cp} -af %{_libdir}/security/classpath.security.real %{_libdir}/security/classpath.security
-%{__cp} -af %{_libdir}/logging.properties.real %{_libdir}/logging.properties
+cp -af %{_libdir}/security/classpath.security.real %{_libdir}/security/classpath.security
+cp -af %{_libdir}/logging.properties.real %{_libdir}/logging.properties
 
 %triggerpostun -- libgcj12-base
-%{__cp} -af %{_libdir}/security/classpath.security.real %{_libdir}/security/classpath.security
-%{__cp} -af %{_libdir}/logging.properties.real %{_libdir}/logging.properties
+cp -af %{_libdir}/security/classpath.security.real %{_libdir}/security/classpath.security
+cp -af %{_libdir}/logging.properties.real %{_libdir}/logging.properties
 # caused by triggerin:
-%{__rm} -f %{_libdir}/security/classpath.security.rpmsave
+rm -f %{_libdir}/security/classpath.security.rpmsave
 
 %files -f %{name}-%{version}.files
-%defattr(-,root,root,-)
 %doc jpackage-utils-README LICENSE.txt HEADER.JPP doc/* etc/httpd-javadoc.conf
 
 %files -n java-rpmbuild -f java-rpmbuild-%{version}.files
-%defattr(-,root,root)
+
