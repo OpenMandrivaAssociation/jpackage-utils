@@ -127,9 +127,11 @@ building Mandriva rpm packages of java software.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
-sed -i -e 's/(^%%_[ml]*iconsdir)/#\1/g' misc/macros.jpackage
-sed -i -e 's/(^%%_menudir)/#\1/' misc/macros.jpackage
-sed -i -e 's|jre/sh|jre/bin|g' java-utils/java-functions 
+
+%{__perl} -pi -e 's/(^%%_[ml]*iconsdir)/#\1/g' misc/macros.jpackage
+%{__perl} -pi -e 's/(^%%_menudir)/#\1/' misc/macros.jpackage
+%{__perl} -pi -e 's|jre/sh|jre/bin|g' java-utils/java-functions
+
 cp %{SOURCE2} .
 
 %build
