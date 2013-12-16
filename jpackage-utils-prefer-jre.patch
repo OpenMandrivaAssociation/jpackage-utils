@@ -29,6 +29,19 @@
    # use $JAVA_HOME if defined
    if [ -n "$JAVA_HOME" ] ; then
      return
+@@ -37,7 +52,11 @@ set_jvm() {
+   # try to find it from java command
+ 
+   # try javac first, or we might get the location of the jre instead - djw
+-  java=`which javac 2>/dev/null || :`
++  # if JRE is prefered then don't try javac - mizdebsk
++  case "$_prefer_jre" in
++    1|[Yy][Ee][Ss]|[Tt][Rr][Uu][Ee]) java= ;;
++    *) java=`which javac 2>/dev/null || :` ;;
++  esac
+ 
+   # if we don't have the jdk, then maybe we have the jre - djw
+   if [ -z "$java" ] ; then
 @@ -60,6 +75,8 @@ set_jvm() {
  # Set the classpath
  # This requires a valid JAVA_HOME, JAVACMD, and JAVA_LIBDIR

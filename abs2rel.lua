@@ -39,10 +39,10 @@ function join(words, sep)
    return string.sub (s, string.len(sep)+1)
 end
 
-function abs2rel (path, base)
+function abs2rel(path, base)
    if path == base then return "." end
-   local pathdirs = split_path (path)
-   local basedirs = split_path (base)
+   local pathdirs = split_path(path)
+   local basedirs = split_path(base)
    local i = 1
    local rem_i = math.min(#pathdirs, #basedirs)
 
@@ -64,3 +64,6 @@ function abs2rel (path, base)
    end
    return join(basedirs, "/")
 end
+
+print(abs2rel(arg[1], arg[2]))
+

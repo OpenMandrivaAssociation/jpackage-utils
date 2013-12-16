@@ -1,3 +1,7 @@
 #!/bin/sh
-(cd `dirname $0` && lua -l abs2rel -e "print(abs2rel(\"$1\", \"$2\"))")
+if [ $# -ne 2 ]; then
+    echo "usage: $0 <PATH> <BASE>" >&2
+    exit 1
+fi
 
+exec lua "`dirname "$0"`/abs2rel.lua" "$@"
