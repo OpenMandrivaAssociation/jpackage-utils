@@ -40,6 +40,7 @@ Release:        27%{?dist}
 Epoch:          0
 Summary:        JPackage utilities
 License:        BSD
+Group:			Development/Java
 URL:            http://www.jpackage.org/
 BuildArch:      noarch
 Source0:        %{name}-%{version}.tar.bz2
