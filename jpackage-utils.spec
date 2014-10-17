@@ -36,7 +36,7 @@
 
 Name:           jpackage-utils
 Version:        1.7.5
-Release:        26%{?dist}
+Release:        27%{?dist}
 Epoch:          0
 Summary:        JPackage utilities
 License:        BSD
