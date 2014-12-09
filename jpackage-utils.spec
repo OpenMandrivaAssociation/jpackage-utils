@@ -36,7 +36,7 @@
 
 Name:           jpackage-utils
 Version:        1.7.5
-Release:        27%{?dist}
+Release:        28%{?dist}
 Epoch:          0
 Summary:        JPackage utilities
 License:        BSD
@@ -61,6 +61,7 @@ Requires:       lua
 
 # for noarch->arch change
 Obsoletes:      %{name} < 0:1.7.5-9
+%rename	java-rpmbuild
 
 %description
 Utilities for the JPackage Project <http://www.jpackage.org/>.
